@@ -98,7 +98,7 @@
         android:layout_margin="@dimen/large_margin"
         >
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/search"
+            android:id="@+id/start"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:lottie_fileName="scan.json"

@@ -22,13 +22,13 @@
         <activity android:name=".muneer.fragment_activty.HomeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             >
-
-        </activity>
-        <activity android:name=".app1.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity android:name=".app1.MainActivity">
 
         </activity>
         <receiver android:name=".muneer.connection.BluetoothConnection"

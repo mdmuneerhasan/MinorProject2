@@ -156,12 +156,6 @@ public class Repository {
 
     }
 
-    public void unSuitable(int position) {
-        connection.postValue(Constants.CONNECTION_FAILED);
-        List<MyDevice> d = devices.getValue();
-        d.get(position).setState(Constants.DEVICE_NOT_SUITABLE);
-        devices.postValue(d);
-    }
 
     public void messageReceived(String message) {
         ArrayList<String> messages=this.messages.getValue();

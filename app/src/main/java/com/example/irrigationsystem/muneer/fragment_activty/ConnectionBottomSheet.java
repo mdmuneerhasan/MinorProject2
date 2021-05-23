@@ -43,7 +43,7 @@ public class ConnectionBottomSheet extends BottomSheetDialogFragment {
         tvBluetooth=view.findViewById(R.id.tvBluetooth);
         ltBluetoothOk =view.findViewById(R.id.ltBluetoothOk);
         ltBluetoothError =view.findViewById(R.id.ltBluetoothError);
-        ltSearch =view.findViewById(R.id.search);
+        ltSearch =view.findViewById(R.id.start);
         btnBluetooth=view.findViewById(R.id.btnBluetooth);
         recyclerView=view.findViewById(R.id.recyclerView);
 

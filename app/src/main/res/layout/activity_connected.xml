@@ -7,30 +7,65 @@
     android:layout_height="match_parent"
     tools:context=".muneer.fragment_activty.ConnectedActivity"
     android:orientation="vertical"
+    android:layout_gravity="center"
     >
-    <Button
-        android:onClick="start"
-        android:text="Start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/large_margin"
-        android:background="@drawable/bg_button"
-        />
-    <Button
-        android:onClick="stop"
-        android:text="Stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/large_margin"
-        android:background="@drawable/bg_button"
-        />
 
-    <FrameLayout
-        android:id="@+id/container"
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading"
+        app:lottie_fileName="running.json"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        app:lottie_loop="true"
+        android:layout_margin="@dimen/large_margin"
         />
+
+
+    <RadioGroup
+        android:checkedButton="@+id/stop"
+        android:id="@+id/toggle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginBottom="@dimen/margin"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/pink_out_line"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="1dp"
+            android:id="@+id/start"
+            android:background="@drawable/toggle_widget_background"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:text="Start"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:layout_marginRight="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:id="@+id/stop"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_widget_background"
+            android:button="@null"
+            android:gravity="center"
+            android:text="Stop"
+            android:textColor="@color/white"
+            />
+    </RadioGroup>
+<!--    <FrameLayout-->
+<!--        android:id="@+id/container"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+
+<!--        />-->
 </LinearLayout>
