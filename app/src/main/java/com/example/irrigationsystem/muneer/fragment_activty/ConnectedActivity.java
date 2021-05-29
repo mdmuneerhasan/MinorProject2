@@ -16,14 +16,12 @@ import static com.example.irrigationsystem.muneer.utility.Constants.CONNECTED;
 
 public class ConnectedActivity extends AppCompatActivity {
     LottieAnimationView loading;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connected);
 
         loading = findViewById(R.id.loading);
-
 
         ((RadioGroup)findViewById(R.id.toggle)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -38,14 +36,12 @@ public class ConnectedActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public void stop() {
         loading.pauseAnimation();
         Repository.getInstance().send("0");
     }
-
     public void start() {
         loading.playAnimation();
         Repository.getInstance().send("1");
