@@ -26,10 +26,10 @@ public class ConnectedActivity extends AppCompatActivity {
     private TextView ShowTime;
     private Button Reset;
 
-    private RadioButton start;
+    private RadioGroup toggle;
     private CountDownTimer mCountDownTime;
 
-    private boolean mTimerRunning;
+
 
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
     @Override
@@ -39,6 +39,7 @@ public class ConnectedActivity extends AppCompatActivity {
 
         ShowTime = findViewById(R.id.ShowTime);
         Reset = findViewById(R.id.Reset);
+        toggle = findViewById(R.id.toggle);
         loading = findViewById(R.id.loading);
 
         Reset.setOnClickListener(new View.OnClickListener() {
@@ -64,10 +65,11 @@ public class ConnectedActivity extends AppCompatActivity {
     }
 
     private void resetTimer() {
+
         mTimeLeftInMillis = START_TIME_IN_MILLIS;
+
         updateCountDownText();
-        Reset.setVisibility(View.INVISIBLE);
-        start.setVisibility(View.VISIBLE);
+
     }
 
     private void updateCountDownText() {
@@ -78,11 +80,35 @@ public class ConnectedActivity extends AppCompatActivity {
     }
 
     public void stop() {
+        pauseTimer();
         loading.pauseAnimation();
         Repository.getInstance().send("0");
     }
     public void start() {
+        startTimer();
         loading.playAnimation();
         Repository.getInstance().send("1");
     }
+    private void pauseTimer() {
+        mCountDownTime.cancel();
+
+
+    }
+    private void startTimer() {
+        mCountDownTime = new CountDownTimer(mTimeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mTimeLeftInMillis = millisUntilFinished;
+                updateCountDownText();
+            }
+            @Override
+            public void onFinish() {
+
+                stop();
+            }
+        }.start();
+
+
+    }
+
 }
