@@ -26,6 +26,28 @@
         android:textSize="40dp"
         android:layout_marginBottom="20dp" />
 
+    <EditText
+        android:id="@+id/setTime"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/Reset"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:hint="Minutes"
+        android:inputType="number"
+        android:maxLength="4"
+        />
+
+    <Button
+        android:id="@+id/set"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="-60dp"
+        android:layout_above="@+id/Reset"
+
+        android:text="Set" />
 
     <Button
         android:id="@+id/Reset"
