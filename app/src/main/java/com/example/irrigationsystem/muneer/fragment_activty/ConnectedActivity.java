@@ -50,7 +50,7 @@ public class ConnectedActivity extends AppCompatActivity {
         setTime = findViewById(R.id.setTime);
         set = findViewById(R.id.set);
         loading = findViewById(R.id.loading);
-
+        //hello
         set.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
