@@ -38,6 +38,7 @@ public class ConnectedActivity extends AppCompatActivity {
     private long mStartTimeInMillis;
     private long mTimeLeftInMillis;
     private long mEndTime;
+    private boolean timerIsSet=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class ConnectedActivity extends AppCompatActivity {
                     return;
                 }
                 long millisInput = Long.parseLong(input) * 60000;
-                if (millisInput == 0) {
+                if (millisInput <= 0) {
                     Toast.makeText(ConnectedActivity.this, "Please enter a positive number", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -105,7 +106,9 @@ public class ConnectedActivity extends AppCompatActivity {
     }
 
     private void resetTimer() {
-
+        try{
+            pauseTimer();
+        }catch (Exception e){}
         mTimeLeftInMillis = mStartTimeInMillis;
 
         updateCountDownText();
@@ -113,6 +116,7 @@ public class ConnectedActivity extends AppCompatActivity {
     }
 
     private void updateCountDownText() {
+        timerIsSet=true;
         int hours = (int) (mTimeLeftInMillis / 1000) / 3600;
         int minutes = (int) ((mTimeLeftInMillis / 1000) % 3600) / 60;
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
@@ -128,18 +132,22 @@ public class ConnectedActivity extends AppCompatActivity {
     }
 
     public void stop() {
-        pauseTimer();
+        if(timerIsSet) {
+            try {
+                pauseTimer();
+            }catch (Exception e){}
+        }
         loading.pauseAnimation();
         Repository.getInstance().send("0");
     }
     public void start() {
+        if(timerIsSet)
         startTimer();
         loading.playAnimation();
         Repository.getInstance().send("1");
     }
     private void pauseTimer() {
         mCountDownTime.cancel();
-
 
     }
     private void startTimer() {
@@ -153,8 +161,8 @@ public class ConnectedActivity extends AppCompatActivity {
             }
             @Override
             public void onFinish() {
-
                 stop();
+                timerIsSet=false;
             }
         }.start();
 

@@ -1,0 +1,185 @@
+<html>
+<head>
+<title>ConnectedActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #808080;}
+.s4 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ConnectedActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.irrigationsystem.muneer.fragment_activty</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.CountDownTimer</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.inputmethod.InputMethodManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.RadioButton</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.RadioGroup</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.airbnb.lottie.LottieAnimationView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.R</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.app1.MainActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.connection.Repository</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.connection.VMMain</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.Locale</span><span class="s0">;</span>
+
+<span class="s0">import static </span><span class="s1">com.example.irrigationsystem.muneer.utility.Constants.CONNECTED</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">ConnectedActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s1">LottieAnimationView loading</span><span class="s0">;</span>
+    <span class="s0">private static final long </span><span class="s1">START_TIME_IN_MILLIS = </span><span class="s2">600000</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">TextView ShowTime</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">Button Reset</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">EditText setTime</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">Button set</span><span class="s0">;</span>
+
+    <span class="s0">private </span><span class="s1">RadioGroup toggle</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">CountDownTimer mCountDownTime</span><span class="s0">;</span>
+
+    <span class="s0">private long </span><span class="s1">mStartTimeInMillis</span><span class="s0">;</span>
+    <span class="s0">private long </span><span class="s1">mTimeLeftInMillis</span><span class="s0">;</span>
+    <span class="s0">private long </span><span class="s1">mEndTime</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_connected)</span><span class="s0">;</span>
+
+        <span class="s1">ShowTime = findViewById(R.id.ShowTime)</span><span class="s0">;</span>
+        <span class="s1">Reset = findViewById(R.id.Reset)</span><span class="s0">;</span>
+        <span class="s1">toggle = findViewById(R.id.toggle)</span><span class="s0">;</span>
+        <span class="s1">setTime = findViewById(R.id.setTime)</span><span class="s0">;</span>
+        <span class="s1">set = findViewById(R.id.set)</span><span class="s0">;</span>
+        <span class="s1">loading = findViewById(R.id.loading)</span><span class="s0">;</span>
+        <span class="s3">//hello</span>
+        <span class="s1">set.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">String input = setTime.getText().toString()</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(input.length() == </span><span class="s2">0</span><span class="s1">) {</span>
+                    <span class="s1">Toast.makeText(ConnectedActivity.</span><span class="s0">this, </span><span class="s4">&quot;Field can't be empty&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s0">long </span><span class="s1">millisInput = Long.parseLong(input) * </span><span class="s2">60000</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(millisInput == </span><span class="s2">0</span><span class="s1">) {</span>
+                    <span class="s1">Toast.makeText(ConnectedActivity.</span><span class="s0">this, </span><span class="s4">&quot;Please enter a positive number&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s1">setTime(millisInput)</span><span class="s0">;</span>
+                <span class="s1">setTime.setText(</span><span class="s4">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">Reset.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">resetTimer()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">((RadioGroup)findViewById(R.id.toggle)).setOnCheckedChangeListener(</span><span class="s0">new </span><span class="s1">RadioGroup.OnCheckedChangeListener() {</span>
+            <span class="s1">@Override</span>
+
+            <span class="s0">public void </span><span class="s1">onCheckedChanged(RadioGroup group</span><span class="s0">, int </span><span class="s1">checkedId) {</span>
+                <span class="s0">switch </span><span class="s1">(checkedId){</span>
+                    <span class="s0">case </span><span class="s1">R.id.start:</span>
+                        <span class="s1">start()</span><span class="s0">;</span>
+                        <span class="s0">break;</span>
+                    <span class="s0">case </span><span class="s1">R.id.stop:</span>
+                        <span class="s1">stop()</span><span class="s0">;</span>
+                        <span class="s0">break;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private void </span><span class="s1">setTime(</span><span class="s0">long </span><span class="s1">milliseconds) {</span>
+        <span class="s1">mStartTimeInMillis = milliseconds</span><span class="s0">;</span>
+        <span class="s1">resetTimer()</span><span class="s0">;</span>
+        <span class="s1">closeKeyboard()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">closeKeyboard() {</span>
+        <span class="s1">View view = </span><span class="s0">this</span><span class="s1">.getCurrentFocus()</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(view != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)</span><span class="s0">;</span>
+            <span class="s1">imm.hideSoftInputFromWindow(view.getWindowToken()</span><span class="s0">, </span><span class="s2">0</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">resetTimer() {</span>
+
+        <span class="s1">mTimeLeftInMillis = mStartTimeInMillis</span><span class="s0">;</span>
+
+        <span class="s1">updateCountDownText()</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">updateCountDownText() {</span>
+        <span class="s0">int </span><span class="s1">hours = (</span><span class="s0">int</span><span class="s1">) (mTimeLeftInMillis / </span><span class="s2">1000</span><span class="s1">) / </span><span class="s2">3600</span><span class="s0">;</span>
+        <span class="s0">int </span><span class="s1">minutes = (</span><span class="s0">int</span><span class="s1">) ((mTimeLeftInMillis / </span><span class="s2">1000</span><span class="s1">) % </span><span class="s2">3600</span><span class="s1">) / </span><span class="s2">60</span><span class="s0">;</span>
+        <span class="s0">int </span><span class="s1">seconds = (</span><span class="s0">int</span><span class="s1">) (mTimeLeftInMillis / </span><span class="s2">1000</span><span class="s1">) % </span><span class="s2">60</span><span class="s0">;</span>
+        <span class="s1">String timeLeftFormatted</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(hours &gt; </span><span class="s2">0</span><span class="s1">) {</span>
+            <span class="s1">timeLeftFormatted = String.format(Locale.getDefault()</span><span class="s0">,</span>
+                    <span class="s4">&quot;%d:%02d:%02d&quot;</span><span class="s0">, </span><span class="s1">hours</span><span class="s0">, </span><span class="s1">minutes</span><span class="s0">, </span><span class="s1">seconds)</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">timeLeftFormatted = String.format(Locale.getDefault()</span><span class="s0">,</span>
+                    <span class="s4">&quot;%02d:%02d&quot;</span><span class="s0">, </span><span class="s1">minutes</span><span class="s0">, </span><span class="s1">seconds)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s1">ShowTime.setText(timeLeftFormatted)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">stop() {</span>
+        <span class="s1">pauseTimer()</span><span class="s0">;</span>
+        <span class="s1">loading.pauseAnimation()</span><span class="s0">;</span>
+        <span class="s1">Repository.getInstance().send(</span><span class="s4">&quot;0&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">public void </span><span class="s1">start() {</span>
+        <span class="s1">startTimer()</span><span class="s0">;</span>
+        <span class="s1">loading.playAnimation()</span><span class="s0">;</span>
+        <span class="s1">Repository.getInstance().send(</span><span class="s4">&quot;1&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private void </span><span class="s1">pauseTimer() {</span>
+        <span class="s1">mCountDownTime.cancel()</span><span class="s0">;</span>
+
+
+    <span class="s1">}</span>
+    <span class="s0">private void </span><span class="s1">startTimer() {</span>
+        <span class="s1">mEndTime = System.currentTimeMillis() + mTimeLeftInMillis</span><span class="s0">;</span>
+
+        <span class="s1">mCountDownTime = </span><span class="s0">new </span><span class="s1">CountDownTimer(mTimeLeftInMillis</span><span class="s0">, </span><span class="s2">1000</span><span class="s1">) {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onTick(</span><span class="s0">long </span><span class="s1">millisUntilFinished) {</span>
+                <span class="s1">mTimeLeftInMillis = millisUntilFinished</span><span class="s0">;</span>
+                <span class="s1">updateCountDownText()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onFinish() {</span>
+
+                <span class="s1">stop()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}.start()</span><span class="s0">;</span>
+
+
+    <span class="s1">}</span>
+
+
+<span class="s1">}</span></pre>
+</body>
+</html>

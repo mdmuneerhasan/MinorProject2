@@ -1,0 +1,163 @@
+<html>
+<head>
+<title>ConnectionBottomSheet.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ConnectionBottomSheet.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.irrigationsystem.muneer.fragment_activty</span><span class="s0">;</span>
+
+
+<span class="s0">import </span><span class="s1">android.bluetooth.BluetoothAdapter</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.CompoundButton</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.annotation.Nullable</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.lifecycle.Observer</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.lifecycle.ViewModelProvider</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.LinearLayoutManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.airbnb.lottie.LottieAnimationView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.R</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.utility.MyBluetoothAdapter</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.utility.MyDevice</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.connection.Repository</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.connection.VMMain</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.bottomsheet.BottomSheetDialogFragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.switchmaterial.SwitchMaterial</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.List</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">ConnectionBottomSheet </span><span class="s0">extends </span><span class="s1">BottomSheetDialogFragment {</span>
+    <span class="s0">private static final int </span><span class="s1">REQUEST_ENABLE_BT = </span><span class="s2">676</span><span class="s0">;</span>
+    <span class="s1">VMMain vmMain</span><span class="s0">;</span>
+    <span class="s1">TextView tvBluetooth</span><span class="s0">;</span>
+    <span class="s1">SwitchMaterial btnBluetooth</span><span class="s0">;</span>
+    <span class="s1">LottieAnimationView ltBluetoothError</span><span class="s0">,</span><span class="s1">ltBluetoothOk</span><span class="s0">,</span><span class="s1">ltSearch</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">BluetoothAdapter mBluetoothAdapter</span><span class="s0">;</span>
+    <span class="s1">RecyclerView recyclerView</span><span class="s0">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onViewCreated(@NonNull View view</span><span class="s0">, </span><span class="s1">@Nullable Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onViewCreated(view</span><span class="s0">, </span><span class="s1">savedInstanceState)</span><span class="s0">;</span>
+
+        <span class="s1">tvBluetooth=view.findViewById(R.id.tvBluetooth)</span><span class="s0">;</span>
+        <span class="s1">ltBluetoothOk =view.findViewById(R.id.ltBluetoothOk)</span><span class="s0">;</span>
+        <span class="s1">ltBluetoothError =view.findViewById(R.id.ltBluetoothError)</span><span class="s0">;</span>
+        <span class="s1">ltSearch =view.findViewById(R.id.start)</span><span class="s0">;</span>
+        <span class="s1">btnBluetooth=view.findViewById(R.id.btnBluetooth)</span><span class="s0">;</span>
+        <span class="s1">recyclerView=view.findViewById(R.id.recyclerView)</span><span class="s0">;</span>
+
+        <span class="s1">btnBluetooth.setChecked(Repository.getInstance().getBluetooth()</span>
+                <span class="s1">.getValue()==BluetoothAdapter.STATE_ON)</span><span class="s0">;</span>
+
+        <span class="s1">mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()</span><span class="s0">;</span>
+        <span class="s1">vmMain=</span><span class="s0">new </span><span class="s1">ViewModelProvider.AndroidViewModelFactory(getActivity().getApplication())</span>
+                <span class="s1">.create(VMMain.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">vmMain.getBluetooth().observe(</span><span class="s0">this, new </span><span class="s1">Observer&lt;Integer&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onChanged(Integer integer) {</span>
+                <span class="s0">switch </span><span class="s1">(integer){</span>
+                    <span class="s0">case </span><span class="s1">BluetoothAdapter.STATE_OFF:</span>
+                        <span class="s1">tvBluetooth.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                        <span class="s1">ltBluetoothError.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                        <span class="s1">ltBluetoothOk.setVisibility(View.GONE)</span><span class="s0">;</span>
+                        <span class="s1">ltSearch.setVisibility(View.GONE)</span><span class="s0">;</span>
+                        <span class="s1">recyclerView.setVisibility(View.GONE)</span><span class="s0">;</span>
+                        <span class="s0">break;</span>
+                    <span class="s0">case </span><span class="s1">BluetoothAdapter.STATE_ON:</span>
+                        <span class="s1">tvBluetooth.setVisibility(View.GONE)</span><span class="s0">;</span>
+                        <span class="s1">ltBluetoothError.setVisibility(View.GONE)</span><span class="s0">;</span>
+                        <span class="s1">ltBluetoothOk.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                        <span class="s1">ltSearch.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                        <span class="s1">recyclerView.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                    <span class="s3">//    search();</span>
+                        <span class="s0">break;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">vmMain.getSearching().observe(</span><span class="s0">this, new </span><span class="s1">Observer&lt;Boolean&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onChanged(Boolean aBoolean) {</span>
+                <span class="s0">if</span><span class="s1">(aBoolean) {</span>
+                    <span class="s1">ltSearch.setRepeatCount(-</span><span class="s2">1</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">ltSearch.playAnimation()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+                <span class="s0">else </span><span class="s1">ltSearch.setRepeatCount(</span><span class="s2">0</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">ltSearch.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">search()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">btnBluetooth.setOnCheckedChangeListener(</span><span class="s0">new </span><span class="s1">CompoundButton.OnCheckedChangeListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCheckedChanged(CompoundButton buttonView</span><span class="s0">, boolean </span><span class="s1">isChecked) {</span>
+                <span class="s0">if</span><span class="s1">(isChecked){</span>
+                    <span class="s1">Intent enableBtIntent = </span><span class="s0">new </span><span class="s1">Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)</span><span class="s0">;</span>
+                    <span class="s1">startActivityForResult(enableBtIntent</span><span class="s0">, </span><span class="s1">REQUEST_ENABLE_BT)</span><span class="s0">;</span>
+
+                <span class="s1">}</span><span class="s0">else</span><span class="s1">{</span>
+                    <span class="s1">mBluetoothAdapter.disable()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">view.findViewById(R.id.btnClose).setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">getActivity().finish()</span><span class="s0">;</span>
+                <span class="s1">dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">recyclerView.setLayoutManager(</span><span class="s0">new </span><span class="s1">LinearLayoutManager(getContext()))</span><span class="s0">;</span>
+        <span class="s1">MyBluetoothAdapter myBluetoothAdapter=</span><span class="s0">new </span><span class="s1">MyBluetoothAdapter(vmMain.getDevices().getValue())</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setAdapter(myBluetoothAdapter)</span><span class="s0">;</span>
+
+        <span class="s1">vmMain.getDevices().observe(</span><span class="s0">this, new </span><span class="s1">Observer&lt;List&lt;MyDevice&gt;&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onChanged(List&lt;MyDevice&gt; myDevices) {</span>
+                <span class="s1">myBluetoothAdapter.notifyDataSetChanged()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">search() {</span>
+        <span class="s0">if</span><span class="s1">(!Repository.getInstance().getSearching().getValue()) {</span>
+            <span class="s1">mBluetoothAdapter.startDiscovery()</span><span class="s0">;</span>
+            <span class="s1">Repository.getInstance().setSearching(</span><span class="s0">true</span><span class="s1">).clearOldDevices()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s1">@Nullable</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">View onCreateView(@NonNull LayoutInflater inflater</span><span class="s0">, </span><span class="s1">@Nullable ViewGroup container</span><span class="s0">, </span><span class="s1">@Nullable Bundle savedInstanceState) {</span>
+        <span class="s0">return </span><span class="s1">inflater.inflate(R.layout.bottom_sheet_connectiom</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

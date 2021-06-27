@@ -1,0 +1,177 @@
+<html>
+<head>
+<title>HomeActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+HomeActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.irrigationsystem.muneer.fragment_activty</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.core.app.ActivityCompat</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.core.content.ContextCompat</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.lifecycle.Observer</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.lifecycle.ViewModelProvider</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.Manifest</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.pm.PackageManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Build</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.FrameLayout</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.airbnb.lottie.LottieAnimationView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.R</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.utility.Constants</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.utility.PreferenceUtil</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.connection.Repository</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.connection.VMMain</span><span class="s0">;</span>
+
+<span class="s0">import static </span><span class="s1">com.example.irrigationsystem.muneer.utility.Constants.CONNECTED</span><span class="s0">;</span>
+<span class="s0">import static </span><span class="s1">com.example.irrigationsystem.muneer.utility.Constants.CONNECTING</span><span class="s0">;</span>
+<span class="s0">import static </span><span class="s1">com.example.irrigationsystem.muneer.utility.Constants.CONNECTION_FAILED</span><span class="s0">;</span>
+<span class="s0">import static </span><span class="s1">com.example.irrigationsystem.muneer.utility.Constants.NOT_CONNECTED</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">HomeActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s0">private static final int </span><span class="s1">PERMISSION_CODE = </span><span class="s2">345</span><span class="s0">;</span>
+    <span class="s1">PreferenceUtil preferenceUtil</span><span class="s0">;</span>
+    <span class="s1">FrameLayout frameLayout</span><span class="s0">;</span>
+    <span class="s1">LottieAnimationView loading</span><span class="s0">;</span>
+    <span class="s1">VMMain vmMain</span><span class="s0">;</span>
+    <span class="s1">ConnectionBottomSheet connectionBottomSheet</span><span class="s0">;</span>
+    <span class="s0">private int </span><span class="s1">i=</span><span class="s2">0</span><span class="s0">;</span>
+    <span class="s1">Button btnStop</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_home)</span><span class="s0">;</span>
+
+        <span class="s1">frameLayout = findViewById(R.id.container)</span><span class="s0">;</span>
+        <span class="s1">loading = findViewById(R.id.loading)</span><span class="s0">;</span>
+        <span class="s1">btnStop = findViewById(R.id.btnClose)</span><span class="s0">;</span>
+
+        <span class="s1">preferenceUtil = PreferenceUtil.getInstance(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">vmMain = </span><span class="s0">new </span><span class="s1">ViewModelProvider.AndroidViewModelFactory(getApplication()).create(VMMain.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+
+
+
+        <span class="s1">checkPermission()</span><span class="s0">;</span>
+        <span class="s1">splash()</span><span class="s0">;</span>
+        <span class="s1">addObserver()</span><span class="s0">;</span>
+
+
+        <span class="s0">new </span><span class="s1">Thread(</span><span class="s0">new </span><span class="s1">Runnable() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">run() {</span>
+                <span class="s0">try </span><span class="s1">{</span>
+                    <span class="s1">Thread.sleep(</span><span class="s2">3000</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">catch </span><span class="s1">(InterruptedException e) {</span>
+                    <span class="s1">e.printStackTrace()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+                <span class="s1">Repository.getInstance().setConnection(NOT_CONNECTED)</span><span class="s0">;</span>
+
+            <span class="s1">}</span>
+        <span class="s1">}).start()</span><span class="s0">;</span>
+
+        
+
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">checkPermission() {</span>
+        <span class="s0">if </span><span class="s1">(Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.Q) {</span>
+            <span class="s0">if </span><span class="s1">(ContextCompat.checkSelfPermission(</span><span class="s0">this,</span>
+                    <span class="s1">Manifest.permission.ACCESS_BACKGROUND_LOCATION)</span>
+                    <span class="s1">!= PackageManager.PERMISSION_GRANTED) {</span>
+                <span class="s1">ActivityCompat.requestPermissions(</span>
+                        <span class="s0">this,</span>
+                        <span class="s0">new </span><span class="s1">String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}</span><span class="s0">,</span>
+                        <span class="s1">PERMISSION_CODE)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">addObserver() {</span>
+        <span class="s1">vmMain.getConnection().observe(</span><span class="s0">this, new </span><span class="s1">Observer&lt;Integer&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onChanged(Integer integer) {</span>
+                <span class="s0">if </span><span class="s1">(connectionBottomSheet != </span><span class="s0">null </span><span class="s1">&amp;&amp; connectionBottomSheet.isVisible()) {</span>
+                    <span class="s1">connectionBottomSheet.dismiss()</span><span class="s0">;</span>
+                    <span class="s1">i--</span><span class="s0">;</span>
+                <span class="s1">}</span>
+                <span class="s0">switch </span><span class="s1">(integer) {</span>
+                    <span class="s0">case </span><span class="s1">NOT_CONNECTED:</span>
+                    <span class="s0">case </span><span class="s1">CONNECTION_FAILED:</span>
+                        <span class="s1">loading.setVisibility(View.GONE)</span><span class="s0">;</span>
+                        <span class="s1">btnStop.setVisibility(View.GONE)</span><span class="s0">;</span>
+                        <span class="s1">loading.pauseAnimation()</span><span class="s0">;</span>
+                        <span class="s0">if</span><span class="s1">(i&lt;=</span><span class="s2">0</span><span class="s1">) {</span>
+                            <span class="s1">connectionBottomSheet = </span><span class="s0">new </span><span class="s1">ConnectionBottomSheet()</span><span class="s0">;</span>
+                            <span class="s1">connectionBottomSheet.show(getSupportFragmentManager()</span><span class="s0">, </span><span class="s3">&quot;connection&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                            <span class="s1">connectionBottomSheet.setCancelable(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+                            <span class="s1">i++</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                        <span class="s0">break;</span>
+                    <span class="s0">case </span><span class="s1">CONNECTING:</span>
+                        <span class="s1">loading.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                        <span class="s1">btnStop.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                        <span class="s1">loading.playAnimation()</span><span class="s0">;</span>
+                        <span class="s0">break;</span>
+                    <span class="s0">case </span><span class="s1">CONNECTED:</span>
+                        <span class="s1">finish()</span><span class="s0">;</span>
+                        <span class="s1">startActivity(</span><span class="s0">new </span><span class="s1">Intent(getBaseContext()</span><span class="s0">,</span><span class="s1">ConnectedActivity.</span><span class="s0">class</span><span class="s1">))</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">splash() {</span>
+
+        <span class="s1">getSupportFragmentManager().beginTransaction()</span>
+                <span class="s1">.add(R.id.container</span><span class="s0">, new </span><span class="s1">IntroFragment()).commit()</span><span class="s0">;</span>
+
+        <span class="s0">new </span><span class="s1">Thread(</span><span class="s0">new </span><span class="s1">Runnable() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">run() {</span>
+                <span class="s0">try </span><span class="s1">{</span>
+                    <span class="s1">Thread.sleep(</span><span class="s2">3000</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">catch </span><span class="s1">(InterruptedException e) {</span>
+                    <span class="s1">e.printStackTrace()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+
+                <span class="s1">frameLayout.animate().translationX(-</span><span class="s2">2000</span><span class="s1">).rotation(</span><span class="s2">270</span><span class="s1">)</span>
+                        <span class="s1">.setDuration(</span><span class="s2">1000</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}).start()</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+
+    <span class="s0">public void </span><span class="s1">disconnect(View view) {</span>
+        <span class="s1">Repository.getInstance().stop()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onResume() {</span>
+        <span class="s0">super</span><span class="s1">.onResume()</span><span class="s0">;</span>
+        <span class="s0">if</span><span class="s1">(vmMain.getConnection().getValue()== CONNECTED){</span>
+            <span class="s1">finish()</span><span class="s0">;</span>
+            <span class="s1">startActivity(</span><span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this,</span><span class="s1">ConnectedActivity.</span><span class="s0">class</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

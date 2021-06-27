@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>ConnectedFragment.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ConnectedFragment.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.irrigationsystem.muneer.fragment_activty</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.annotation.Nullable</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.Fragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.lifecycle.ViewModelProvider</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.LinearLayoutManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.R</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.connection.VMMain</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.irrigationsystem.muneer.utility.MotorAdapter</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">ConnectedFragment </span><span class="s0">extends </span><span class="s1">Fragment {</span>
+    <span class="s1">RecyclerView recyclerView</span><span class="s0">;</span>
+    <span class="s1">MotorAdapter motorAdapter</span><span class="s0">;</span>
+    <span class="s1">VMMain vmMain</span><span class="s0">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onViewCreated(@NonNull View view</span><span class="s0">, </span><span class="s1">@Nullable Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onViewCreated(view</span><span class="s0">, </span><span class="s1">savedInstanceState)</span><span class="s0">;</span>
+
+        <span class="s1">recyclerView=view.findViewById(R.id.recyclerView)</span><span class="s0">;</span>
+
+        <span class="s1">vmMain=</span><span class="s0">new </span><span class="s1">ViewModelProvider.AndroidViewModelFactory(getActivity()</span>
+                <span class="s1">.getApplication()).create(VMMain.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+
+
+        <span class="s1">initRecyclerView()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">initRecyclerView() {</span>
+        <span class="s1">motorAdapter=</span><span class="s0">new </span><span class="s1">MotorAdapter(vmMain.getMotors().getValue()){</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onBindViewHolder(@NonNull MotorAdapter.Holder holder</span><span class="s0">, int </span><span class="s1">position) {</span>
+                <span class="s0">super</span><span class="s1">.onBindViewHolder(holder</span><span class="s0">, </span><span class="s1">position)</span><span class="s0">;</span>
+                <span class="s1">holder.itemView.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                        <span class="s1">getFragmentManager().beginTransaction()</span>
+                                <span class="s1">.addToBackStack(</span><span class="s0">null</span><span class="s1">)</span>
+                                <span class="s1">.replace(R.id.container</span><span class="s0">,</span><span class="s1">MotorFragment.newInstance(motors.get(position).id</span><span class="s0">,</span><span class="s2">&quot;&quot;</span><span class="s1">))</span>
+                                <span class="s1">.commit()</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setLayoutManager(</span><span class="s0">new </span><span class="s1">LinearLayoutManager(getContext()))</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setAdapter(motorAdapter)</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">View onCreateView(LayoutInflater inflater</span><span class="s0">, </span><span class="s1">ViewGroup container</span><span class="s0">,</span>
+                             <span class="s1">Bundle savedInstanceState) {</span>
+        <span class="s0">return </span><span class="s1">inflater.inflate(R.layout.fragment_connected</span><span class="s0">, </span><span class="s1">container</span><span class="s0">, false</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>
